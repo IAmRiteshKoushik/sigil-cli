@@ -1,0 +1,5 @@
+[rabbitmq]
+url = "amqp://admin:admin123@localhost:5672/sigil-vhost"
+
+[cli]
+log_level = "info"
