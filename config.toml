@@ -1,5 +1,6 @@
-[rabbitmq]
-url = "amqp://admin:admin123@localhost:5672/sigil-vhost"
-
-[cli]
-log_level = "info"
+rabbitmq_url = "amqp://admin:admin123@localhost:5672/sigil-vhost"
+smtp_host = "smtp.gmail.com"
+smtp_port = 587
+smtp_username = "your-email@gmail.com"
+smtp_password = "your-app-password"
+smtp_from = "your-email@gmail.com"
