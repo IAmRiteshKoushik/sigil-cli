@@ -34,7 +34,21 @@ func createQueues(events []string) error {
 		}
 
 		for _, queueName := range queues {
-			_, err := ch.QueueDeclare(
+			// Check if queue already exists
+			exists, err := queueExists(ch, queueName)
+			if err != nil {
+				log.Printf("Failed to check if queue %s exists: %v", queueName, err)
+				continue
+			}
+
+			if exists {
+				log.Printf("Queue %s already exists, skipping creation", queueName)
+				fmt.Printf("Queue %s already exists, skipping\n", queueName)
+				continue
+			}
+
+			// Create queue if it doesn't exist
+			_, err = ch.QueueDeclare(
 				queueName, // name
 				true,      // durable
 				false,     // delete when unused
@@ -52,4 +66,28 @@ func createQueues(events []string) error {
 	}
 
 	return nil
+}
+
+func queueExists(ch *amqp.Channel, queueName string) (bool, error) {
+	// Try to passively declare the queue to check if it exists
+	_, err := ch.QueueDeclarePassive(
+		queueName, // name
+		true,      // durable
+		false,     // delete when unused
+		false,     // exclusive
+		false,     // no-wait
+		nil,       // arguments
+	)
+
+	if err != nil {
+		// If error contains "NOT_FOUND", queue doesn't exist
+		if strings.Contains(err.Error(), "NOT_FOUND") {
+			return false, nil
+		}
+		// Other error occurred
+		return false, err
+	}
+
+	// Queue exists
+	return true, nil
 }
