@@ -9,12 +9,12 @@ import (
 )
 
 type Config struct {
-	RabbitMQURL string `toml:"rabbitmq_url"`
-	SMTPHost    string `toml:"smtp_host"`
-	SMTPPort    int    `toml:"smtp_port"`
-	SMTPUser    string `toml:"smtp_username"`
-	SMTPPass    string `toml:"smtp_password"`
-	SMTPFrom    string `toml:"smtp_from"`
+	RabbitMQURL string `koanf:"rabbitmq_url"`
+	SMTPHost    string `koanf:"smtp_host"`
+	SMTPPort    int    `koanf:"smtp_port"`
+	SMTPUser    string `koanf:"smtp_username"`
+	SMTPPass    string `koanf:"smtp_password"`
+	SMTPFrom    string `koanf:"smtp_from"`
 }
 
 var cfg Config
