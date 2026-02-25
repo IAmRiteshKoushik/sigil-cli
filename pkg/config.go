@@ -1,4 +1,4 @@
-package main
+package pkg
 
 import (
 	"log"
@@ -8,20 +8,22 @@ import (
 	"github.com/knadh/koanf/providers/file"
 )
 
-type Config struct {
-	RabbitMQURL string `koanf:"rabbitmq_url"`
-	SMTPHost    string `koanf:"smtp_host"`
-	SMTPPort    int    `koanf:"smtp_port"`
-	SMTPUser    string `koanf:"smtp_username"`
-	SMTPPass    string `koanf:"smtp_password"`
-	SMTPFrom    string `koanf:"smtp_from"`
-}
+const CONFIG_PATH = "configs/env.toml"
 
 var cfg Config
 var k = koanf.New(".")
 
+type Config struct {
+	RabbitMQURL string `koanf:"rabbitmq_url"`
+	StorageDir  string `koanf:"storage_dir"`
+	SMTPHost    string `koanf:"smtp_host"`
+	SMTPPort    int    `koanf:"smtp_port"`
+	SMTPUser    string `koanf:"smtp_username"`
+	SMTPPass    string `koanf:"smtp_password"`
+}
+
 func LoadConfig() {
-	if err := k.Load(file.Provider("config.toml"), toml.Parser()); err != nil {
+	if err := k.Load(file.Provider(CONFIG_PATH), toml.Parser()); err != nil {
 		log.Fatalf("Error loading config: %v", err)
 	}
 

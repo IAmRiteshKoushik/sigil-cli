@@ -1,4 +1,4 @@
-package main
+package pkg
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-func createQueues(events []string) error {
+func CreateQueues(events []string) error {
 	cfg := GetConfig()
 
 	conn, err := amqp.Dial(cfg.RabbitMQURL)
@@ -35,7 +35,7 @@ func createQueues(events []string) error {
 
 		for _, queueName := range queues {
 			// Check if queue already exists
-			exists, err := queueExists(ch, queueName)
+			exists, err := QueueExists(ch, queueName)
 			if err != nil {
 				log.Printf("Failed to check if queue %s exists: %v", queueName, err)
 				continue
@@ -60,15 +60,14 @@ func createQueues(events []string) error {
 				log.Printf("Failed to declare queue %s: %v", queueName, err)
 				continue
 			}
-			log.Printf("Created queue: %s", queueName)
-			fmt.Printf("Created queue: %s\n", queueName)
+			log.Printf("Created queue: %s\n", queueName)
 		}
 	}
 
 	return nil
 }
 
-func queueExists(ch *amqp.Channel, queueName string) (bool, error) {
+func QueueExists(ch *amqp.Channel, queueName string) (bool, error) {
 	// Try to passively declare the queue to check if it exists
 	_, err := ch.QueueDeclarePassive(
 		queueName, // name
@@ -80,7 +79,6 @@ func queueExists(ch *amqp.Channel, queueName string) (bool, error) {
 	)
 
 	if err != nil {
-		// If error contains "NOT_FOUND", queue doesn't exist
 		if strings.Contains(err.Error(), "NOT_FOUND") {
 			return false, nil
 		}

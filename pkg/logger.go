@@ -1,4 +1,4 @@
-package main
+package pkg
 
 import (
 	"log"
@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func setupLogger() {
+func SetupLogger() {
 	logFile, err := os.OpenFile("sigil.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatalf("Error opening log file: %v", err)

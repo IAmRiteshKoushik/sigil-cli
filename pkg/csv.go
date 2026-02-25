@@ -1,4 +1,4 @@
-package main
+package pkg
 
 import (
 	"encoding/csv"
@@ -17,7 +17,7 @@ type StudentData struct {
 	EventName    string `json:"event_name"`
 }
 
-func parseCSVFile(filename string) ([]StudentData, error) {
+func ParseCSVFile(filename string) ([]StudentData, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open CSV file %s: %v", filename, err)
@@ -47,7 +47,7 @@ func parseCSVFile(filename string) ([]StudentData, error) {
 		student := StudentData{
 			StudentName:  strings.TrimSpace(record[0]),
 			StudentEmail: strings.TrimSpace(record[1]),
-			EventName:    extractEventName(filename),
+			EventName:    ExtractEventName(filename),
 		}
 
 		if student.StudentName == "" || student.StudentEmail == "" {
@@ -61,13 +61,13 @@ func parseCSVFile(filename string) ([]StudentData, error) {
 	return students, nil
 }
 
-func extractEventName(filename string) string {
+func ExtractEventName(filename string) string {
 	base := filepath.Base(filename)
 	ext := filepath.Ext(base)
 	return strings.TrimSuffix(base, ext)
 }
 
-func publishToQueue(queueName string, students []StudentData) error {
+func PublishToQueue(queueName string, students []StudentData) error {
 	cfg := GetConfig()
 
 	conn, err := amqp.Dial(cfg.RabbitMQURL)
