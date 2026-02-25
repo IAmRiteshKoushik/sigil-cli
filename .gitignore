@@ -37,4 +37,4 @@ Thumbs.db
 *.log
 
 # Config files with sensitive data
-config-local.toml
+env.toml
