@@ -7,12 +7,14 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/IAmRiteshKoushik/sigil/cmd"
+	"github.com/IAmRiteshKoushik/sigil/pkg"
 	"github.com/spf13/cobra"
 )
 
 func init() {
-	LoadConfig()
-	setupLogger()
+	pkg.LoadConfig()
+	pkg.SetupLogger()
 }
 
 var createCmd = &cobra.Command{
@@ -23,14 +25,14 @@ var createCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		eventsFile := args[0]
 
-		events, err := readEventsFile(eventsFile)
+		events, err := pkg.ReadEventsFile(eventsFile)
 		if err != nil {
 			log.Fatalf("Error reading events file: %v", err)
 		}
 
 		fmt.Printf("Found %d events\n", len(events))
 
-		if err := createQueues(events); err != nil {
+		if err := pkg.CreateQueues(events); err != nil {
 			log.Fatalf("Error creating queues: %v", err)
 		}
 
@@ -46,7 +48,7 @@ var processCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		csvFile := args[0]
 
-		students, err := parseCSVFile(csvFile)
+		students, err := pkg.ParseCSVFile(csvFile)
 		if err != nil {
 			log.Fatalf("Error parsing CSV file: %v", err)
 		}
@@ -56,13 +58,13 @@ var processCmd = &cobra.Command{
 			return
 		}
 
-		eventName := extractEventName(csvFile)
+		eventName := pkg.ExtractEventName(csvFile)
 		queueName := fmt.Sprintf("cert_%s", eventName)
 
 		fmt.Printf("Processing %d students for event: %s\n", len(students), eventName)
 		fmt.Printf("Publishing to queue: %s\n", queueName)
 
-		if err := publishToQueue(queueName, students); err != nil {
+		if err := pkg.PublishToQueue(queueName, students); err != nil {
 			log.Fatalf("Error publishing to queue: %v", err)
 		}
 
@@ -106,9 +108,9 @@ var processBatchCmd = &cobra.Command{
 			filename := filepath.Base(csvFile)
 			fmt.Printf("\n[%d/%d] Processing: %s\n", i+1, len(csvFiles), filename)
 
-			students, err := parseCSVFile(csvFile)
+			students, err := pkg.ParseCSVFile(csvFile)
 			if err != nil {
-				fmt.Printf("❌ Error parsing %s: %v\n", filename, err)
+				fmt.Printf("Error parsing %s: %v\n", filename, err)
 				failed++
 				continue
 			}
@@ -119,13 +121,13 @@ var processBatchCmd = &cobra.Command{
 				continue
 			}
 
-			eventName := extractEventName(csvFile)
+			eventName := pkg.ExtractEventName(csvFile)
 			queueName := fmt.Sprintf("cert_%s", eventName)
 
 			fmt.Printf("📊 Processing %d students for event: %s\n", len(students), eventName)
 			fmt.Printf("📤 Publishing to queue: %s\n", queueName)
 
-			if err := publishToQueue(queueName, students); err != nil {
+			if err := pkg.PublishToQueue(queueName, students); err != nil {
 				fmt.Printf("❌ Error publishing %s to queue: %v\n", filename, err)
 				failed++
 				continue
@@ -188,12 +190,13 @@ func init() {
 }
 
 func main() {
-	var rootCmd = &cobra.Command{Use: "sigil"}
-	rootCmd.AddCommand(createCmd)
-	rootCmd.AddCommand(processCmd)
-	rootCmd.AddCommand(processBatchCmd)
-
-	if err := rootCmd.Execute(); err != nil {
-		log.Fatal(err)
-	}
+	// var rootCmd = &cobra.Command{Use: "sigil"}
+	// rootCmd.AddCommand(createCmd)
+	// rootCmd.AddCommand(processCmd)
+	// rootCmd.AddCommand(processBatchCmd)
+	//
+	// if err := rootCmd.Execute(); err != nil {
+	// 	log.Fatal(err)
+	// }
+	cmd.Execute()
 }
