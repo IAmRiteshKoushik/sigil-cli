@@ -17,6 +17,24 @@ type StudentData struct {
 	EventName    string `json:"event_name"`
 }
 
+func FindCSVFiles(dir string) ([]string, error) {
+	var csvFiles []string
+
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !info.IsDir() && filepath.Ext(path) == ".csv" {
+			csvFiles = append(csvFiles, path)
+		}
+
+		return nil
+	})
+
+	return csvFiles, err
+}
+
 func ParseCSVFile(filename string) ([]StudentData, error) {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -52,6 +70,54 @@ func ParseCSVFile(filename string) ([]StudentData, error) {
 
 		if student.StudentName == "" || student.StudentEmail == "" {
 			log.Printf("Skipping row %d: empty name or email", i+1)
+			continue
+		}
+
+		students = append(students, student)
+	}
+
+	return students, nil
+}
+
+func ParseInternalCSVFile(filename string) ([]StudentData, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open CSV file %s: %v", filename, err)
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read CSV file %s: %v", filename, err)
+	}
+
+	var students []StudentData
+	for i, record := range records {
+		// Skip header if it exists (check if first row looks like headers)
+		if i == 0 && (strings.ToLower(strings.TrimSpace(record[0])) == "student_name" ||
+			strings.ToLower(strings.TrimSpace(record[1])) == "student_email") {
+			continue
+		}
+
+		// Ensure we have at least 3 columns
+		if len(record) < 3 {
+			log.Printf("Skipping row %d: insufficient columns", i+1)
+			continue
+		}
+
+		name := strings.TrimSpace(record[0])
+		email := strings.ToLower(strings.TrimSpace(record[1])) + "@cb.students.amrita.edu"
+		ename := strings.TrimSpace(record[2])
+
+		student := StudentData{
+			StudentName:  name,
+			StudentEmail: email,
+			EventName:    ename,
+		}
+
+		if student.StudentName == "" || student.StudentEmail == "" || student.EventName == "" {
+			log.Printf("Skipping row %d: empty name or email or event", i+1)
 			continue
 		}
 
