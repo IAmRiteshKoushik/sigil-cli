@@ -49,4 +49,4 @@ stamp-winner name event pos input output nameoffset="0" eventnameoffset="0" poso
 
   @rm step_1.pdf
   @rm step_2.pdf
-  @echo "Success! Created {{output}}
+  @echo "Success! Created {{output}}"
