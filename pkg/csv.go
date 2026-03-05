@@ -11,6 +11,13 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
+type WinnerData struct {
+	EventName    string `json:"event_name"`
+	Pos          string `json:"position"`
+	StudentName  string `json:"student_name"`
+	StudentEmail string `json:"student_email"`
+}
+
 type StudentData struct {
 	StudentName  string `json:"student_name"`
 	StudentEmail string `json:"student_email"`
@@ -107,7 +114,7 @@ func ParseInternalCSVFile(filename string) ([]StudentData, error) {
 		}
 
 		name := strings.TrimSpace(record[0])
-		email := strings.ToLower(strings.TrimSpace(record[1])) + "@cb.students.amrita.edu"
+		email := strings.ToLower(strings.TrimSpace(record[1]))
 		ename := strings.TrimSpace(record[2])
 
 		student := StudentData{
@@ -125,6 +132,11 @@ func ParseInternalCSVFile(filename string) ([]StudentData, error) {
 	}
 
 	return students, nil
+}
+
+func ParseWinnersCSVFile(filename string) ([]WinnerData, error) {
+	// TODO: Implement later
+	return []WinnerData{}, nil
 }
 
 func ExtractEventName(filename string) string {
