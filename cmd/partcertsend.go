@@ -78,8 +78,6 @@ The certificate file is expected to be found at @storage/cert/<event_name>/<stud
 			certPath := filepath.Join(config.StorageDir, "cert", event.EventName, event.StudentEmail+".pdf")
 
 			subject := "Anokha 2026 - Certificate of Participation"
-			// subject := "Anokha 2026 - Certificate of Recognition"
-			// subject := "Anokha 2026 - Certificate of Achievement"
 
 			body := fmt.Sprintf("Hey %s,\n\nCongratulations on successfully participating in Anokha 2026! On behalf of the organizing committee at Amrita Vishwa Vidyapeetham, we want to extend our heartfelt thanks to you for being part of this year's journey. Your energy, innovation, and passion were what made this edition of Anokha truly vibrant and memorable. \n\nAttached to this email, you will find your Certificate of Participation. This document serves as a formal recognition of the hard work and skill you brought to the event.\n\nBest Regards\n\nThe Anokha 2026 - Organizing Committee\nAmrita Vishwa Vidyapeetham", event.StudentName)
 			// body := fmt.Sprintf("")
