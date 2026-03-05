@@ -135,8 +135,47 @@ func ParseInternalCSVFile(filename string) ([]StudentData, error) {
 }
 
 func ParseWinnersCSVFile(filename string) ([]WinnerData, error) {
-	// TODO: Implement later
-	return []WinnerData{}, nil
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open CSV file %s: %v", filename, err)
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read CSV file %s: %v", filename, err)
+	}
+
+	var winners []WinnerData
+	for i, record := range records {
+		// Skip header if it exists (check if first row looks like headers)
+		if i == 0 && (strings.ToLower(strings.TrimSpace(record[0])) == "student_name" ||
+			strings.ToLower(strings.TrimSpace(record[1])) == "student_email") {
+			continue
+		}
+
+		// Ensure we have at least 4 columns
+		if len(record) < 4 {
+			log.Printf("Skipping row %d: insufficient columns", i+1)
+			continue
+		}
+
+		ename := strings.ToUpper(strings.TrimSpace(record[0]))
+		pos := strings.TrimSpace(record[1])
+		name := strings.TrimSpace(record[2])
+		email := strings.ToLower(strings.TrimSpace(record[3]))
+
+		winner := WinnerData{
+			Pos:          pos,
+			StudentName:  name,
+			StudentEmail: email,
+			EventName:    ename,
+		}
+		winners = append(winners, winner)
+	}
+
+	return winners, nil
 }
 
 func ExtractEventName(filename string) string {
@@ -180,6 +219,46 @@ func PublishToQueue(queueName string, students []StudentData) error {
 		}
 
 		log.Printf("Published student %s to queue %s", student.StudentName, queueName)
+	}
+
+	return nil
+}
+
+func PublishToWinnersQueue(queueName string, winners []WinnerData) error {
+	cfg := GetConfig()
+
+	conn, err := amqp.Dial(cfg.RabbitMQURL)
+	if err != nil {
+		return fmt.Errorf("failed to connect to RabbitMQ: %v", err)
+	}
+	defer conn.Close()
+
+	ch, err := conn.Channel()
+	if err != nil {
+		return fmt.Errorf("failed to open a channel: %v", err)
+	}
+	defer ch.Close()
+
+	for _, winner := range winners {
+		payload := fmt.Sprintf(`{"student_name":"%s","student_email":"%s","event_name":"%s", "position":"%s"}`,
+			winner.StudentName, winner.StudentEmail, winner.EventName, winner.Pos)
+
+		err := ch.Publish(
+			"",        // exchange
+			queueName, // routing key
+			false,     // mandatory
+			false,     // immediate
+			amqp.Publishing{
+				ContentType: "application/json",
+				Body:        []byte(payload),
+			})
+		if err != nil {
+			log.Printf("Failed to publish student %s to queue %s: %v",
+				winner.StudentName, queueName, err)
+			continue
+		}
+
+		log.Printf("Published student %s to queue %s", winner.StudentName, queueName)
 	}
 
 	return nil
