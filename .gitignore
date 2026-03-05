@@ -36,5 +36,9 @@ Thumbs.db
 # Logs
 *.log
 
+# Any data file
+*.csv
+*.pdf
+
 # Config files with sensitive data
 env.toml
