@@ -105,7 +105,6 @@ in @storage/cert/event_name/student_email, and publish to "dispatch_event_name".
 				outputPath := eventDirPath + "/" + event.StudentEmail + ".pdf"
 
 				// Create and write to file
-				// cmd := fmt.Sprintf("just stamp-participation \"%s\" \"%s\" \"%s\" \"%s\"", studentName, eventName, templatePath, outputPath)
 				cmd := exec.Command("just",
 					"stamp-participation",
 					studentName,
