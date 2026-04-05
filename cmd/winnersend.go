@@ -13,14 +13,20 @@ import (
 )
 
 var winnersendCmd = &cobra.Command{
-	Use:   "winnersend",
-	Short: "Dequeues events from RabbitMQ and sends winner certificates via email.",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Use:   "winnersend <name>",
+	Short: "Dequeue and send Certificate of Achievement via email",
+	Long: `Consumes messages from the dispatch_<name> queue and sends
+Certificate of Achievement emails to winners.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+The certificate PDF is expected at: storage/cert/winners/<student_email>.pdf
+
+Each email includes:
+  - Subject: "Anokha 2026 - Certificate of Achievement"
+  - Personalized congratulations body
+  - Certificate PDF attachment renamed to "certification-of-achievement.pdf"
+
+Example:
+  sigil winnersend winners`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		name := args[0]

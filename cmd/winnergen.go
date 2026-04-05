@@ -15,13 +15,19 @@ import (
 
 var winnergenCmd = &cobra.Command{
 	Use:   "winnergen [queue_base_name] [template_path]",
-	Short: "Generate certificate for event winners",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Generate Certificate of Achievement for winners",
+	Long: `Consumes from cert_<queue_base_name> queue, stamps PDF certificates
+with student name, event name, and position, then publishes to
+dispatch_<queue_base_name> queue.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Workflow:
+  1. Listens on cert_<queue_base_name> queue
+  2. Stamps PDF using: just stamp-winner "<name>" "<event>" "<position>" <template> <output>
+  3. Saves certificate to: storage/cert/<queue_base_name>/<student_email>.pdf
+  4. Publishes event to dispatch_<queue_base_name> queue
+
+Example:
+  sigil winnergen winners templates/participation_cert.pdf`,
 	Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		queueBaseName := args[0]

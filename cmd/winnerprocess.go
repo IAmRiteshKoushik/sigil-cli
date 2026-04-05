@@ -9,15 +9,19 @@ import (
 )
 
 var winnerprocessCmd = &cobra.Command{
-	Use:   "winnerprocess",
-	Short: "Process CSV containing data for winners",
-	Args:   cobra.ExactArgs(1),
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Use:   "winnerprocess [csv-file]",
+	Short: "Process winners CSV and publish to cert_winners queue",
+	Long: `Reads winner data from a CSV file and publishes to the cert_winners queue.
+Each winner record includes: event_name, position, student_name, student_email.
+This command is the first step in the Certificate of Achievement workflow.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+CSV format:
+  event_name,position,student_name,student_email
+  AGAMOTTO PROTOCOL,1st Place,John Doe,john@example.com
+
+Example:
+  sigil winnerprocess storage/winners.csv`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		csvFile := args[0]
 

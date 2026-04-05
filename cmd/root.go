@@ -10,14 +10,21 @@ import (
 var Version = "1.0.0-alpha"
 
 var rootCmd = &cobra.Command{
-	Use:     "sigil-cli",
-	Short:   "The CLI for dispatching certificates",
+	Use:     "sigil",
+	Short:   "Certificate stamping and dispatch system for Amrita events",
 	Version: Version,
-	Long: `Sigil CLI is a simple tool to orchestrate sending certificates in 
-Amrita events. It relies on github.com/pdfcpu/pdfcpu to do the heavy lifting 
-of certificate generatoin and uses RabbitMQ for reliability during dispatches.`,
+	Long: `Sigil is a certificate dispatch system for Amrita events.
+It handles three types of certificates:
+  - Certificate of Participation (external)
+  - Certificate of Achievement (external)
+  - Certificate of Recognition (internal)
+
+The system uses RabbitMQ for reliable queue-based processing and
+pdfcpu for PDF certificate stamping.
+
+Run 'sigil --help' for available commands.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Running sigil-cli version: %s\n", Version)
+		fmt.Printf("Running sigil version: %s\n", Version)
 	},
 }
 
