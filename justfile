@@ -11,7 +11,7 @@ build:
 # y-offset, you are on your own :)
 
 # Works for both participation and recognition certificates
-stamp-participation name event input output nameoffset="-115" eventnameoffset="-35":
+stamp-participation name event input output nameoffset="-115" eventnameoffset="50":
   @echo "Step 1: Stamping Name '{{name}}'..."
   @pdfcpu stamp add -mode text -- \
       "{{name}}" \
@@ -28,7 +28,7 @@ stamp-participation name event input output nameoffset="-115" eventnameoffset="-
   @echo "Success! Created {{output}}"
 
 # Works for winner certificates
-stamp-winner name event pos input output nameoffset="0" eventnameoffset="0" posoffset="-200":
+stamp-winner name event pos input output nameoffset="0" eventnameoffset="50" posoffset="-200":
   @echo "Step 1: Stamping Name '{{name}}'..."
   @pdfcpu stamp add -mode text -- \
       "{{name}}" \
